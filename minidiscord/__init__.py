@@ -1,7 +1,9 @@
-from . import context
+from . import context as _context
 
-context = context.minictx
+Context = _context.MiniContext
+Bot = _context.MiniContextBot
 
 __all__ = (
-    context
+    Context,
+    Bot
 )
