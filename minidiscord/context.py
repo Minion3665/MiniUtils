@@ -68,8 +68,8 @@ class MiniContext(commands.Context):
             )
 
     def input(self,
-              title: typing.Union[str, discord.Embed.Empty] = discord.Embed.Empty,
-              prompt: typing.Union[str, discord.Embed.Empty] = discord.Embed.Empty,
+              title: typing.Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
+              prompt: typing.Union[str, discord.embeds._EmptyEmbed] = discord.Embed.Empty,
               required_type: type = str,
               timeout: int = 60,
               check: callable = lambda message: True,
