@@ -5,8 +5,8 @@ import typing
 
 
 class MiniContext(commands.Context):
-    def __init__(self, context):
-        commands.Context.__init__(self, **context.__dict__)
+    def __init__(self, **kwargs):
+        commands.Context.__init__(self, **kwargs)
         self.mention = self.channel.mention if isinstance(self.channel, discord.TextChannel) else "No channel"
 
     async def send(self,
@@ -18,7 +18,8 @@ class MiniContext(commands.Context):
                    files=None,
                    delete_after=None,
                    nonce=None,
-                   embed=None):
+                   embed=None,
+                   paginate_by: typing.Optional[str] = None):
         """
         :param description: The description of the embed
         :param title: The title of the embed
@@ -31,11 +32,23 @@ class MiniContext(commands.Context):
         This is typically non-important.
         :param embed: A fully-formed embed to send.
         IF THIS IS SET IT IS ASSUMED YOU HAVE ALREADY DONE PERMISSION CHECKS. THE EMBED WILL BE SENT AS IS
+        :param paginate_by: What character do you want to paginate by? Only the description will be paginated
         :return: Returns a discord message object
         :raises: discord.HTTPException - sending the message failed
         :raises: discord.Forbidden - you don't have permissions to do this
         :raises: discord.InvalidArgument - both files & file were specified, or files wasn't of a valid length
         """
+        description_parts = description.split(paginate_by) if paginate_by is not None else [description]
+        merged_description_parts = []
+        next_description_part = ""
+        for part in description_parts:
+            if len(next_description_part) + len(part) > 2000:
+                merged_description_parts.append(next_description_part)
+                next_description_part = ""
+            next_description_part += part
+        if next_description_part:
+            merged_description_parts.append(next_description_part)
+
         if embed:
             return await self.channel.send(
                 embed=embed
@@ -58,8 +71,8 @@ class MiniContext(commands.Context):
             )
         else:
             return await self.channel.send(
-                (f"> **{title}**" if title is not None else "") +
-                (f"\n{description}" if description is not None else ""),
+                (f"> **{title}**" if title != discord.Embed.Empty else "") +
+                (f"\n{description}" if description != discord.Embed.Empty else ""),
                 tts=tts,
                 file=file,
                 files=files,
@@ -86,6 +99,7 @@ class MiniContext(commands.Context):
         :raises: discord.HTTPException - sending the message failed
         :raises: discord.Forbidden - you don't have permissions to do this
         """
+
         async def message_check(message):
             try:
                 if self.author == message.author and self.channel == message.channel:
