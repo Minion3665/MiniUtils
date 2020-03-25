@@ -57,7 +57,7 @@ class MiniContext(commands.Context):
             return await self.channel.send(
                 embed=embed
             )
-        my_perms = self.channel.permissions_for(self.channel.guild.me) \
+        my_perms = self.permissions_for(self.channel.guild.me) \
             if isinstance(self.channel, discord.TextChannel) else None
         messages = []
         if not isinstance(self.channel, discord.TextChannel) or my_perms.embed_links:
