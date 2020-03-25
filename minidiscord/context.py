@@ -8,7 +8,10 @@ class MiniContext(commands.Context):
     def __init__(self, **kwargs):
         commands.Context.__init__(self, **kwargs)
         self.mention = self.channel.mention if isinstance(self.channel, discord.TextChannel) else "No channel"
-
+        
+    def permissions_for(self, *args, **kwargs):
+        return self.channel.permissions_for(*args, *kwargs)
+    
     async def send(self,
                    description=discord.Embed.Empty, *,
                    title=discord.Embed.Empty,
@@ -44,8 +47,9 @@ class MiniContext(commands.Context):
         merged_description_parts = []
         next_description_part = ""
         for part in description_parts:
-            if part == embed.Empty:
+            if part == discord.Embed.Empty:
                 next_description_part = part
+                continue
             if len(next_description_part) + len(part) > 2000:
                 merged_description_parts.append(next_description_part)
                 next_description_part = ""
@@ -161,5 +165,10 @@ class MiniContext(commands.Context):
 
 
 class MiniContextBot(commands.Bot):
+    async def get_context(self, message, *, cls=MiniContext):
+        return await super().get_context(message, cls=cls)
+        
+    
+class AutoShardedMiniContextBot(commands.AutoShardedBot):
     async def get_context(self, message, *, cls=MiniContext):
         return await super().get_context(message, cls=cls)
