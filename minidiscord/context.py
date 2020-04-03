@@ -141,11 +141,11 @@ class MiniContext(commands.Context):
                             title="Oops"
                         ))
             except ValueError:
-                await self.send(
+                asyncio.create_task(self.send(
                     error,
                     title="Oops",
                     color=discord.Color(0xf44336)
-                )
+                ))
             return False
 
         await self.send(
