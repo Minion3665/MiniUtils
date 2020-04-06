@@ -132,13 +132,46 @@ class MiniContext(commands.Context):
         def message_check(message):
             try:
                 if self.author == message.author and self.channel == message.channel:
+                    if required_type == bool:
+                        if response.content.lower().replace(" ", "") in [
+                            "true",
+                            "yes",
+                            "y",
+                            "t",
+                            "1",
+                            "+",
+                            "accept",
+                            "allow",
+                            "a",
+                            "✅",
+                            "false",
+                            "no",
+                            "n",
+                            "f",
+                            "0",
+                            "-",
+                            "refuse",
+                            "deny",
+                            "r",
+                            "d",
+                            "❌"
+                        ]:
+                            return True
+                        else:
+                            asyncio.create_task(self.send(
+                                error,
+                                title="Oops",
+                                color=discord.Color(0xf44336)
+                            ))
+                            return False
                     required_type(message.content)
                     if check(message):
                         return True
                     else:
                         asyncio.create_task(self.send(
                             error,
-                            title="Oops"
+                            title="Oops",
+                            color=discord.Color(0xf44336)
                         ))
             except ValueError:
                 asyncio.create_task(self.send(
