@@ -128,12 +128,12 @@ class MiniContext(commands.Context):
         :raises: discord.HTTPException - sending the message failed
         :raises: discord.Forbidden - you don't have permissions to do this
         """
-
+        @decorators.debug
         def message_check(message):
             try:
                 if self.author == message.author and self.channel == message.channel:
                     if required_type == bool:
-                        if response.content.lower().replace(" ", "") in [
+                        if message.content.lower().replace(" ", "") in [
                             "true",
                             "yes",
                             "y",
