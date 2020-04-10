@@ -7,6 +7,7 @@ from . import handlers
 
 class ErrorHandler(commands.Cog):
     def __init__(self, bot):
+        print("Loading MiniUtils Error Handler")
         self.bot = bot
         self._handlers = ()
         handlers.setup(self)
@@ -14,9 +15,12 @@ class ErrorHandler(commands.Cog):
     def handles(self, exception):
         def decorator(func):
             if isinstance(exception, tuple) or issubclass(exception, Exception):
-                self._handlers += ((exception, func),)
+                self._handlers = ((exception, func),) + self._handlers
             else:
                 raise TypeError(f"{str(exception)} isn't an exception or a tuple of exceptions")
+
+            print(f"{exception} is now handled by {func.__name__}")
+
             return func
 
         if (isinstance(exception, typing.Callable) or inspect.iscoroutinefunction(exception)) \

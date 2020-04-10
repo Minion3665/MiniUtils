@@ -1,3 +1,5 @@
+from . import CompleteHandler
+
 from . import ArgumentErrors
 from . import CooldownErrors
 from . import ExtensionErrors
@@ -7,6 +9,8 @@ from . import WrongPlaceErrors
 
 
 def setup(handler):
+    CompleteHandler.setup(handler)
+
     ArgumentErrors.setup(handler)
     CooldownErrors.setup(handler)
     ExtensionErrors.setup(handler)
