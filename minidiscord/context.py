@@ -4,6 +4,7 @@ import copy
 import typing
 import asyncio
 from .. import decorators
+from . import errors
 
 
 class MiniContext(commands.Context):
@@ -14,6 +15,14 @@ class MiniContext(commands.Context):
 
     def permissions_for(self, *args, **kwargs):
         return self.channel.permissions_for(*args, *kwargs)
+
+    async def send_exception(self, *args, **kwargs):
+        kwargs["color"] = self.bot.exceptions_color
+        kwargs["title"] = self.bot.exceptions_emote + kwargs.get("title")
+        await self.send(
+            *args,
+            **kwargs
+        )
 
     async def send(self,
                    content=discord.Embed.Empty, *,
@@ -44,6 +53,8 @@ class MiniContext(commands.Context):
         :raises: discord.Forbidden - you don't have permissions to do this
         :raises: discord.InvalidArgument - both files & file were specified, or files wasn't of a valid length
         """
+        content = str(content) if content != discord.Embed.Empty else content
+        title = str(title) if title != discord.Embed.Empty else title
         if paginate_by is not None:
             description_parts = content.split(paginate_by)
             merged_description_parts = []
@@ -128,6 +139,7 @@ class MiniContext(commands.Context):
         :raises: discord.HTTPException - sending the message failed
         :raises: discord.Forbidden - you don't have permissions to do this
         """
+
         @decorators.debug
         def message_check(message):
             try:
@@ -217,6 +229,17 @@ class MiniContext(commands.Context):
 
 
 class MiniContextBot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        exceptions_channel = kwargs.pop("exceptions_channel", None)
+        exceptions_emote = kwargs.pop("exceptions_emote", "")
+        exceptions_color = kwargs.pop("exceptions_color", discord.Embed.Empty)
+        super().__init__(*args, **kwargs)
+        self.exceptions_channel = exceptions_channel
+        self.exceptions_emote = exceptions_emote + " " if exceptions_emote else ""
+        self.exceptions_color = exceptions_color
+        self.error_handler = errors.ErrorHandler(self)
+        self.add_cog(self.error_handler)
+
     async def get_context(self, message, *, cls=MiniContext):
         return await super().get_context(message, cls=cls)
 
@@ -224,9 +247,5 @@ class MiniContextBot(commands.Bot):
         self.__dict__[key] = value
 
 
-class AutoShardedMiniContextBot(commands.AutoShardedBot):
-    async def get_context(self, message, *, cls=MiniContext):
-        return await super().get_context(message, cls=cls)
-
-    def set(self, key, value):
-        self.__dict__[key] = value
+class AutoShardedMiniContextBot(MiniContextBot, commands.AutoShardedBot):
+    pass
