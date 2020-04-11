@@ -69,7 +69,7 @@ async def handle_all(ctx, _error, _next):
                     exception_message += f"Creating an invite failed"
                     await exceptions_channel.send_exception(
                         str(e),
-                        title=f"Creating an invite failed in case {case_id}"
+                        title=f"Creating an invite failed in case `{case_id}`"
                     )
             else:
                 exception_message += f"I don't have permissions to create an invite"
@@ -85,8 +85,8 @@ async def handle_all(ctx, _error, _next):
         print(e)
     with contextlib.suppress(Exception):
         await ctx.send_exception(
-            f"I messed up, somehow. Nobody really knows how though. Try sending the case ID {case_id} to my developers "
-            f"and see if they can sort it out."
+            f"I messed up, somehow. Nobody really knows how though. Try sending the case ID `{case_id}` to my "
+            f"developers and see if they can sort it out."
             f"{f' My support server is {ctx.bot.support_invite}' if ctx.bot.support_invite else ''}",
             title="Oops..."
         )
