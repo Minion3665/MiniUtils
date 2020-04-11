@@ -3,7 +3,6 @@ import inspect
 import asyncio
 import functools
 import discord
-import emoji
 
 
 def is_coroutine_function_or_partial(obj):
@@ -14,7 +13,7 @@ def is_coroutine_function_or_partial(obj):
 
 class Menu:
     def __init__(self, bot, timeout: int = 60, callbacks: bool = False,
-                 timeout_callback: typing.Union[typing.Callable, typing.Coroutine] = None, emojify=False):
+                 timeout_callback: typing.Union[typing.Callable, typing.Coroutine] = None):
         self.__bot = bot
         self.__reactions = {}
         self.__callbacks = callbacks
