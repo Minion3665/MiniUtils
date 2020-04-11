@@ -52,7 +52,7 @@ async def handle_all(ctx, _error, _next):
                     author_permissions_list.append(permission)
 
             exception_message += f"Message Link: " \
-                                 f"https://discordapp.com/channels/{ctx.guild.id}/{ctx.channel.id}/{ctx.message.id}\n"
+                                 f"{ctx.message.jump_url}\n"
             exception_message += f"My Permissions: `{', '.join(my_permissions_list)}`\n"
             exception_message += f"Their Permissions: `{', '.join(author_permissions_list)}`\n"
 

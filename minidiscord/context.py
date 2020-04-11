@@ -140,7 +140,7 @@ class MiniContext(commands.Context):
         :raises: discord.Forbidden - you don't have permissions to do this
         """
 
-        @decorators.debug
+        
         def message_check(message):
             try:
                 if self.author == message.author and self.channel == message.channel:
