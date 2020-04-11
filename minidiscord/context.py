@@ -240,6 +240,7 @@ class MiniContextBot(commands.Bot):
         self.exceptions_color = exceptions_color
         self.support_invite = support_invite
         self.error_handler = errors.ErrorHandler(self)
+        self.case = 0
         self.add_cog(self.error_handler)
 
     async def get_context(self, message, *, cls=MiniContext):
