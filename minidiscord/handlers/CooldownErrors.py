@@ -35,3 +35,6 @@ def setup(handler):
     handler.handles(
         commands.CommandOnCooldown
     )(handle_command_on_cooldown)
+    handler.handles(
+        commands.MaxConcurrencyReached
+    )(handle_max_concurrency_reached)
