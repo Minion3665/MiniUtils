@@ -64,7 +64,7 @@ class MiniContext(commands.Context):
                     next_description_part = ""
                     merged_description_parts.append(part)
                     continue
-                if len(next_description_part) + len(paginate_by) + len(part) > 2000:
+                if len(next_description_part) + len(paginate_by) + len(part) > 1900:
                     merged_description_parts.append(next_description_part)
                     next_description_part = ""
                 next_description_part += (paginate_by if pos > 0 else "") + part
@@ -140,7 +140,7 @@ class MiniContext(commands.Context):
         :raises: discord.Forbidden - you don't have permissions to do this
         """
 
-        
+
         def message_check(message):
             try:
                 if self.author == message.author and self.channel == message.channel:
