@@ -1,22 +1,35 @@
-import discord
-from discord.ext import commands
+"""
+The file housing the custom context
+"""
+import asyncio
 import copy
 import typing
-import asyncio
-from .. import decorators
+
+import discord
+from discord.ext import commands
+
 from . import errors
 
 
 class MiniContext(commands.Context):
+    """
+    The custom context, featuring shortcuts and embeds
+    """
     def __init__(self, **kwargs):
         commands.Context.__init__(self, **kwargs)
         self.mention = self.channel.mention if isinstance(self.channel, discord.TextChannel) else "No channel"
         self._cleaner = commands.clean_content()
 
     def permissions_for(self, *args, **kwargs):
+        """
+        Get the permissions for a user in the current channel
+        """
         return self.channel.permissions_for(*args, *kwargs)
 
     async def send_exception(self, *args, **kwargs):
+        """
+        Same as send, but sending an exception
+        """
         kwargs["color"] = self.bot.exceptions_color
         kwargs["title"] = self.bot.exceptions_emote + kwargs.get("title")
         await self.send(
@@ -55,6 +68,10 @@ class MiniContext(commands.Context):
         """
         content = str(content) if content != discord.Embed.Empty else content
         title = str(title) if title != discord.Embed.Empty else title
+        content, title = (
+            content.replace("%%", self.bot.get_main_custom_prefix(self)),
+            title.replace("%%", self.bot.get_main_custom_prefix(self))[:256]
+        )
         if paginate_by is not None:
             description_parts = content.split(paginate_by)
             merged_description_parts = []
@@ -140,8 +157,14 @@ class MiniContext(commands.Context):
         :raises: discord.Forbidden - you don't have permissions to do this
         """
 
-
         def message_check(message):
+            """
+
+            :param message:
+            :type message:
+            :return:
+            :rtype: bool
+            """
             try:
                 if self.author == message.author and self.channel == message.channel:
                     if required_type == bool:
@@ -229,6 +252,9 @@ class MiniContext(commands.Context):
 
 
 class MiniContextBot(commands.Bot):
+    """
+    A bot that uses the custom context & error handler
+    """
     def __init__(self, *args, **kwargs):
         exceptions_channel = kwargs.pop("exceptions_channel", None)
         exceptions_emote = kwargs.pop("exceptions_emote", "")
@@ -244,11 +270,20 @@ class MiniContextBot(commands.Bot):
         self.add_cog(self.error_handler)
 
     async def get_context(self, message, *, cls=MiniContext):
+        """
+        Get the context, in this case a custom context
+        """
         return await super().get_context(message, cls=cls)
 
     def set(self, key, value):
+        """
+        Set something that can be accessed with bot.key
+        """
         self.__dict__[key] = value
 
 
 class AutoShardedMiniContextBot(MiniContextBot, commands.AutoShardedBot):
+    """
+    A bot that uses the custom context & error handler, but this time with discord.py's autosharding
+    """
     pass
