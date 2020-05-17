@@ -4,6 +4,7 @@ The file housing the custom context
 import asyncio
 import copy
 import typing
+import functools
 
 import discord
 from discord.ext import commands
@@ -11,10 +12,124 @@ from discord.ext import commands
 from . import errors
 
 
+class Empty:
+    """Nothing to see here..."""
+    pass
+
+
+empty = Empty()
+
+
+class Message(discord.Message):
+    """Discord's message but somehow a little different..."""
+
+    def __init__(self, message):
+        ignored = (
+            "__class__",
+            "created_at",
+            "edited_at",
+            "jump_url",
+            "edit",
+        )
+        for attribute in dir(message):
+            if attribute in ignored:
+                continue
+            attr = getattr(message, attribute, empty)
+            if not isinstance(attr, Empty):
+                try:
+                    object.__setattr__(self, attribute, getattr(message, attribute))
+                except AttributeError:
+                    print(f"COULD NOT SET ATTRIBUTE {attribute} ON MESSAGE")
+
+    async def old_edit(self, **fields):
+        """Discord.py's actual edit"""
+        await super().edit(**fields)
+
+    async def edit(self, *, context=None, switch_prefix=True, **fields):
+        """
+        Note: Pagination is not supported in edited messages
+
+        :param context: Specify the invocation context. If this is being run from the context, this is ignored. If the prefixes are not being switched this is not required
+        :param switch_prefix: Replace %% with the prefix
+        :type switch_prefix: bool
+        :param content: The description of the embed
+        :param title: The title of the embed
+        :param color: The color of the embed
+        :param delete_after: How long should we delete the message after?
+        :param embed: A fully-formed embed to send.
+        IF THIS IS SET IT IS ASSUMED YOU HAVE ALREADY DONE PERMISSION CHECKS. THE EMBED WILL BE SENT AS IS
+        :raises: discord.HTTPException - editing the message failed
+        :raises: discord.Forbidden - Tried to edit a message’s content or embed that isn’t yours
+        """
+        passing_arguments = {}
+        specified = [
+            "title" in fields,
+            "content" in fields,
+            "color" in fields
+        ]
+
+        try:
+            passing_arguments["delete_after"] = fields["delete_after"]
+        except KeyError:
+            pass
+
+        try:
+            return await super().edit(
+                embed=fields["embed"],
+                **passing_arguments
+            )
+        except KeyError:
+            pass
+
+        try:
+            embed = self.embeds[0]
+        except IndexError:
+            class FauxEmbed:
+                """The fake embed so that we can allow using values from the embed"""
+                title = discord.Embed.Empty
+                description = discord.Embed.Empty
+                color = discord.Embed.Empty
+
+            embed = FauxEmbed()
+
+        try:
+            fields["content"]
+        except KeyError:
+            fields["content"] = embed.description
+        else:
+            fields["content"] = str(fields["content"]) if fields["content"] is not None else fields["content"]
+            if switch_prefix and context is not None:
+                fields["content"] = fields["content"].replace("%%", context.bot.get_main_custom_prefix(context)) if \
+                    fields["content"] is not None else fields["content"]
+
+        try:
+            fields["title"]
+        except KeyError:
+            fields["title"] = embed.title
+        else:
+            fields["title"] = str(fields["title"]) if fields["title"] is not None else fields["title"]
+            if switch_prefix and context is not None:
+                fields["title"] = fields["title"].replace("%%", context.bot.get_main_custom_prefix(context)) if fields[
+                                                                                                                    "title"] is not None else \
+                    fields["title"]
+
+        try:
+            fields["color"]
+        except KeyError:
+            fields["color"] = embed.color
+
+        if any(specified):
+            passing_arguments["embed"] = discord.Embed(title=fields["title"], description=fields["content"],
+                                                       color=fields["color"])
+
+        return await super().edit(**passing_arguments)
+
+
 class MiniContext(commands.Context):
     """
     The custom context, featuring shortcuts and embeds
     """
+
     def __init__(self, **kwargs):
         commands.Context.__init__(self, **kwargs)
         self.mention = self.channel.mention if isinstance(self.channel, discord.TextChannel) else "No channel"
@@ -31,7 +146,7 @@ class MiniContext(commands.Context):
         Same as send, but sending an exception
         """
         kwargs["color"] = self.bot.exceptions_color
-        kwargs["title"] = self.bot.exceptions_emote + kwargs.get("title")
+        kwargs["title"] = self.bot.exceptions_emote + str(kwargs.get("title")) if kwargs.get("title") else ""
         await self.send(
             *args,
             **kwargs
@@ -47,8 +162,11 @@ class MiniContext(commands.Context):
                    delete_after=None,
                    nonce=None,
                    embed=None,
-                   paginate_by: typing.Optional[str] = None):
+                   paginate_by: typing.Optional[str] = None,
+                   switch_prefix=True):
         """
+        :param switch_prefix: Switch out %% with the prefix
+        :type switch_prefix: bool
         :param content: The description of the embed
         :param title: The title of the embed
         :param color: The color of the embed
@@ -69,8 +187,8 @@ class MiniContext(commands.Context):
         content = str(content) if content != discord.Embed.Empty else content
         title = str(title) if title != discord.Embed.Empty else title
         content, title = (
-            content.replace("%%", self.bot.get_main_custom_prefix(self)),
-            title.replace("%%", self.bot.get_main_custom_prefix(self))[:256]
+            content.replace("%%", self.bot.get_main_custom_prefix(self)) if content != discord.Embed.Empty else content,
+            title.replace("%%", self.bot.get_main_custom_prefix(self))[:256] if title != discord.Embed.Empty else title
         )
         if paginate_by is not None:
             description_parts = content.split(paginate_by)
@@ -91,9 +209,14 @@ class MiniContext(commands.Context):
             merged_description_parts = [content]
 
         if embed:
-            return await self.channel.send(
-                embed=embed
-            )
+            return Message(await super().send(
+                embed=embed,
+                tts=tts,
+                file=file,
+                files=files,
+                delete_after=delete_after,
+                nonce=nonce
+            ))
         my_perms = self.permissions_for(self.channel.guild.me) \
             if isinstance(self.channel, discord.TextChannel) else None
         messages = []
@@ -107,30 +230,29 @@ class MiniContext(commands.Context):
                 if file:
                     embed.set_image(url="attachment://" + file.filename)
                 try:
-                    messages.append(await self.channel.send(
+                    messages.append(Message(await super().send(
                         embed=embed,
                         tts=tts,
                         file=file,
                         files=files,
                         delete_after=delete_after,
                         nonce=nonce,
-                    ))
+                    )))
                 except discord.HTTPException as e:
                     raise e
         else:
             for part in merged_description_parts:
                 part = await self._cleaner.convert(self, part) if part != discord.Embed.Empty else part
-                messages.append(
-                    await self.channel.send(
-                        (f"> **{title}**" if title != discord.Embed.Empty else "") +
-                        (f"\n{part}" if part != discord.Embed.Empty else ""),
-                        tts=tts,
-                        file=file,
-                        files=files,
-                        delete_after=delete_after,
-                        nonce=nonce
-                    )
-                )
+                messages.append(Message(await super().send(
+                    (f"> **{title}**" if title != discord.Embed.Empty else "") +
+                    (f"\n{part}" if part != discord.Embed.Empty else ""),
+                    tts=tts,
+                    file=file,
+                    files=files,
+                    delete_after=delete_after,
+                    nonce=nonce
+                )))
+
         return messages[0] if paginate_by is None else messages
 
     async def input(self,
@@ -255,6 +377,7 @@ class MiniContextBot(commands.Bot):
     """
     A bot that uses the custom context & error handler
     """
+
     def __init__(self, *args, **kwargs):
         exceptions_channel = kwargs.pop("exceptions_channel", None)
         exceptions_emote = kwargs.pop("exceptions_emote", "")

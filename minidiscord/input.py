@@ -32,17 +32,20 @@ class Menu:
         self.__bot.loop.create_task(add_reactions())
 
         def react_check(react, member):
+            if react.message.id != message.id:
+                return False
+            if member == self.__bot.user:
+                return False
             if not self.__reactions.get(react.emoji):
+                self.__bot.loop.create_task(react.remove(member))
                 return False
             if member != responding:
-                return False
-            if react.message.id != message.id:
+                self.__bot.loop.create_task(react.remove(member))
                 return False
             return True
 
         def message_check(msg):
             if not self.__reactions.get(msg.content):
-                print(f"Content {msg.content} doesn't have the right reaction")
                 return False
             if msg.author != responding:
                 return False
