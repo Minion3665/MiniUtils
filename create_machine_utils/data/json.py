@@ -54,7 +54,7 @@ class Json:
         try:
             return self.load_data()[str(key)]
         except KeyError:
-            return None
+            return {}
 
     def save_key(self, key, value):
         """

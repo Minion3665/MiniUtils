@@ -3,6 +3,7 @@ import inspect
 import asyncio
 import functools
 import discord
+import emoji as em
 
 
 def is_coroutine_function_or_partial(obj):
@@ -24,9 +25,9 @@ class Menu:
         async def add_reactions():
             for react in self.__reactions.keys():
                 try:
-                    await message.add_reaction(react)
+                    await message.add_reaction(em.demojize(em.emojize(react, use_aliases=True)))
                 except discord.HTTPException as e:
-                    print(e)
+                    print(f"Couldn't add {react} - {e}")
                     pass
 
         self.__bot.loop.create_task(add_reactions())

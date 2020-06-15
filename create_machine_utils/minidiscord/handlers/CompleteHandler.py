@@ -7,7 +7,7 @@ import contextlib
 async def handle_all(ctx, _error, _next):
     exceptions_channel = ctx.bot.get_channel(ctx.bot.exceptions_channel)
     ctx.bot.case += 1
-    case_id = str(ctx.message.id).zfill(4)[-4:-1] + str(ctx.bot.case)
+    case_id = str(ctx.bot.exceptions_case_prefix) + str(ctx.message.id).zfill(4)[-4:-1] + str(ctx.bot.case)
 
     paginator = commands.Paginator(prefix=f"```py\n")
     paginator.add_line(f"Uncaught {type(_error).__name__} with case ID {case_id}")
