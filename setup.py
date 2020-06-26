@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='create-machine-utils',
-    version='1.3.5',
+    version='1.3.11',
     packages=find_packages(),
     url='https://github.com/Minion3665/MiniUtils',
     license='GNU General Public License V3',

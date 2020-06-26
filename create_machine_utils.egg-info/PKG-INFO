@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: create-machine-utils
-Version: 1.3.5
+Version: 1.3.11
 Summary: The MiniUtils module to make making discord bots easier
 Home-page: https://github.com/Minion3665/MiniUtils
 Author: Minion3665
@@ -9,7 +9,7 @@ License: GNU General Public License V3
 Description: Previously MiniUtils
         
         ### WHAT'S NEW IN THIS VERSION?
-        Add better emoji support
+        And then remember that you actually need to make it check the negative (I'm really good at programming- please)
         
         ## Welcome to the create-machine-utils module
         Here at ClicksMinutePer we make discord bots. We do it so often infact that we often get a little annoyed at stuff that discord.py does badly, such as creating embeds<br/>
@@ -20,6 +20,24 @@ Description: Previously MiniUtils
         Whatever way you decide, we hope you enjoy using ~~miniutils~~ <sup>You can't call it that anymore minion: someone over here already has that package name</sup> <sub>Oh, my bad... sorry.</sub> create machine utils
         
         ### FULL CHANGELOG
+        #### Create-machine-utils 1.3.11:
+        And then remember that you actually need to make it check the negative (I'm really good at programming- please)
+        
+        #### Create-machine-utils 1.3.9b and 1.3.10:
+        And once again enable recognising more errors
+        
+        #### Create-machine-utils 1.3.9:
+        Fix that small bug with recognising more errors
+        
+        #### Create-machine-utils 1.3.8:
+        Allow more types of errors to be recognised, that was really annoying for CancelledErrors
+        
+        #### Create-machine-utils 1.3.7:
+        Allow ignoring the 'that exception isn't an exception' exception. That was really annoying for CancelledErrors
+        
+        #### Create-machine-utils 1.3.6:
+        Re-remove that emoji support as it was broken
+        
         #### Create-machine-utils 1.3.5:
         Add better emoji support
         

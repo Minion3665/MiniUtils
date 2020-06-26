@@ -1,3 +1,2 @@
-emoji
-git+https://github.com/Rapptz/discord.py.git
-
+setuptools
+twine
