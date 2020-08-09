@@ -6,13 +6,16 @@ create_machine_utils/decorators.py
 create_machine_utils.egg-info/PKG-INFO
 create_machine_utils.egg-info/SOURCES.txt
 create_machine_utils.egg-info/dependency_links.txt
+create_machine_utils.egg-info/requires.txt
 create_machine_utils.egg-info/top_level.txt
 create_machine_utils/data/__init__.py
 create_machine_utils/data/json.py
 create_machine_utils/minidiscord/__init__.py
 create_machine_utils/minidiscord/context.py
 create_machine_utils/minidiscord/errors.py
+create_machine_utils/minidiscord/exceptions.py
 create_machine_utils/minidiscord/input.py
+create_machine_utils/minidiscord/menus.py
 create_machine_utils/minidiscord/handlers/ArgumentErrors.py
 create_machine_utils/minidiscord/handlers/CompleteHandler.py
 create_machine_utils/minidiscord/handlers/CooldownErrors.py

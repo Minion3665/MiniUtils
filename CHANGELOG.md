@@ -1,3 +1,19 @@
+#### Create-machine-utils 1.4.8:
+Definitely not changing the version number each time to avoid writing new changelog entries
+Fixed... maybe?
+Change the menu so that you can put keyword arguments when calling it
+Keeping the previous changelog below as it's still relevant to such a minor change only a few hours after release:
+Large changelist this time, here we go:
+Rewrote the menu class (the old one is still available under the same name (but deprecated. It will likely be removed in the next major release), the new one is now available under Menus)
+Added a "not" check, which will be True when a check fails.
+Next release is likely to be a documentation release- we'll see how well that goes... (it wasn't)
+
+#### Create-machine-utils 1.4:
+Large changelist this time, here we go:
+Rewrote the menu class (the old one is still available under the same name (but deprecated. It will likely be removed in the next major release), the new one is now available under Menus)
+Added a "not" check, which will be True when a check fails.
+Next release is likely to be a documentation release- we'll see how well that goes...
+
 #### Create-machine-utils 1.3.11:
 And then remember that you actually need to make it check the negative (I'm really good at programming- please)
 

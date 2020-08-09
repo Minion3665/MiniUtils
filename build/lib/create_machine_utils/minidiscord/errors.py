@@ -37,6 +37,7 @@ class ErrorHandler(commands.Cog):
                         or (type(error) == type and issubclass(error, handles))
                         or (type(handles) == type and error == handles)
                         or (type(handles) == tuple and error in handles)):
+                    print(handles, error)
                     continue
                 continue_handling = False
 

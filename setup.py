@@ -7,10 +7,14 @@ with open("CHANGELOG.md", "r") as fh:
 with open("README.md", "r") as fh:
     long_description = fh.read().format(latest_change=latest, changelog=changelog)
 
+with open("min_requirements.txt", "r") as fh:
+    requirements = [line.strip() for line in fh.readlines() if line.strip()]
+
 setup(
     name='create-machine-utils',
-    version='1.3.11',
+    version='1.4.8',
     packages=find_packages(),
+    install_requires=requirements,
     url='https://github.com/Minion3665/MiniUtils',
     license='GNU General Public License V3',
     author='Minion3665',

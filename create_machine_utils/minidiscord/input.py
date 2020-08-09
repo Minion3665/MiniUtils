@@ -3,6 +3,8 @@ import inspect
 import asyncio
 import functools
 import discord
+from deprecated import deprecated
+
 
 def is_coroutine_function_or_partial(obj):
     while isinstance(obj, functools.partial):
@@ -10,6 +12,7 @@ def is_coroutine_function_or_partial(obj):
     return inspect.iscoroutinefunction(obj)
 
 
+@deprecated(version='1.4', reason="Rewritten under create_machine_utils.minidiscord.menu.Menu, please use that instead")
 class Menu:
     def __init__(self, bot, timeout: int = 60, callbacks: bool = False,
                  timeout_callback: typing.Union[typing.Callable, typing.Coroutine] = None):
