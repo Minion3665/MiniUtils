@@ -12,7 +12,7 @@ with open("min_requirements.txt", "r") as fh:
 
 setup(
     name='create-machine-utils',
-    version='1.4.8',
+    version='1.4.9',
     packages=find_packages(),
     install_requires=requirements,
     url='https://github.com/Minion3665/MiniUtils',

@@ -1,3 +1,6 @@
+#### Create-machine-utils 1.4.9:
+Fix the small bug with menus
+
 #### Create-machine-utils 1.4.8:
 Definitely not changing the version number each time to avoid writing new changelog entries
 Fixed... maybe?

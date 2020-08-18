@@ -38,7 +38,7 @@ class Menu:
 
     def __add__(self, other):
         other = other if type(other) == tuple else (other, None)
-        if not not len(other) == 2 \
+        if not len(other) == 2 \
                 or not (isinstance(other[0], discord.Emoji) or (isinstance(other[0], str) and other[0] in emojis)) \
                 or not (isinstance(other[1], (typing.Callable, typing.Coroutine)) or other[1] is None):
             return NotImplemented
